@@ -154,12 +154,10 @@
           <el-input v-model="formNode.nodeName" placeholder="请输入节点名称" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitNodeForm">新增</el-button>
-      </div>
+      <el-button type="primary" @click="submitNodeForm">新增</el-button>
       <el-table v-loading="nodeLoading" :data="processNodeList" @selection-change="handleSelectionNodeChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="节点名称" align="center" prop="processName" />
+        <el-table-column label="节点名称" align="center" prop="nodeName" />
         <el-table-column label="节点序号 " align="center" prop="step" />
         <el-table-column label="流程标识 " align="center" prop="processMark" />
         <el-table-column label="创建人" align="center" prop="createBy" />
@@ -193,7 +191,7 @@ export default {
   data() {
     return {
       //流程标识
-      processMark:"",
+      processMarks:"",
       // 遮罩层
       loading: true,
       //节点页面遮罩
@@ -245,7 +243,10 @@ export default {
         processMark: processMark
       }
       listNode(param).then(response => {
-        this.processList = response.rows;
+        console.log(response.rows);
+        if(response.rows){
+          this.processNodeList = response.rows;
+        }
         //this.total = response.total;
         this.nodeLoading = false;
       });
@@ -264,11 +265,17 @@ export default {
       this.open = false;
       this.reset();
     },
+    // node取消按钮
+    cancelNode() {
+      this.open = false;
+      this.reset();
+    },
     // 表单重置
     reset() {
       this.form = {
         id: null,
         processMark: null,
+        processMarks:null,
         processName: null,
         createBy: null,
         createTime: null,
@@ -322,13 +329,11 @@ export default {
     /**配置节点*/
     handleNodeSit(row){
       this.reset();
-      const processMark = row.processMark || this.processMark;
-      this.getNodeList(processMark).then(response => {
-        this.processNodeList = response.data;
-        this.processMark=processMark;
-        this.openNode = true;
-        this.title = "配置节点";
-      });
+      const processMark = row.processMark || this.processMarks;
+      this.getNodeList(processMark);
+      this.processMarks=processMark;
+      this.openNode = true;
+      this.title = "配置节点";
     },
     /** 提交按钮 */
     submitNodeForm() {
@@ -337,11 +342,11 @@ export default {
           if (this.formNode.id != null) {
 
           } else {
-            this.formNode.processMark=this.processMark;
+            this.formNode.processMark=this.processMarks;
             addNode(this.formNode).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
-              this.getNodeList(this.processMark);
+              this.getNodeList(this.processMarks);
             });
           }
         }

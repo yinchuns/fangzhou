@@ -10,10 +10,10 @@ export function delNode(id) {
 }
 
 
-// 新增节点
+// 新增流程节点
 export function addNode(data) {
   return request({
-    url: '/system/process/processNode/add',
+    url: '/system/process/processNode',
     method: 'post',
     data: data
   })
