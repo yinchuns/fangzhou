@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProcessMapper">
+    
+    <resultMap type="SysProcess" id="SysProcessResult">
+        <result property="id"    column="id"    />
+        <result property="processMark"    column="process_mark"    />
+        <result property="processName"    column="process_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="formName"    column="form_name"    />
+        <result property="approvalFormUrl"    column="approval_form_url"    />
+        <result property="updateFormUrl"    column="update_form_url"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectSysProcessVo">
+        select id, process_mark, process_name, create_by, create_time, update_by, update_time, form_name, approval_form_url, update_form_url, del_flag from sys_process
+    </sql>
+
+    <select id="selectSysProcessList" parameterType="SysProcess" resultMap="SysProcessResult">
+        <include refid="selectSysProcessVo"/>
+        <where>  
+            <if test="processName != null  and processName != ''"> and process_name like concat('%', #{processName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectSysProcessById" parameterType="Long" resultMap="SysProcessResult">
+        <include refid="selectSysProcessVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysProcess" parameterType="SysProcess" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_process
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="processMark != null">process_mark,</if>
+            <if test="processName != null">process_name,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="formName != null">form_name,</if>
+            <if test="approvalFormUrl != null">approval_form_url,</if>
+            <if test="updateFormUrl != null">update_form_url,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="processMark != null">#{processMark},</if>
+            <if test="processName != null">#{processName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="formName != null">#{formName},</if>
+            <if test="approvalFormUrl != null">#{approvalFormUrl},</if>
+            <if test="updateFormUrl != null">#{updateFormUrl},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysProcess" parameterType="SysProcess">
+        update sys_process
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="processMark != null">process_mark = #{processMark},</if>
+            <if test="processName != null">process_name = #{processName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="formName != null">form_name = #{formName},</if>
+            <if test="approvalFormUrl != null">approval_form_url = #{approvalFormUrl},</if>
+            <if test="updateFormUrl != null">update_form_url = #{updateFormUrl},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysProcessById" parameterType="Long">
+        delete from sys_process where id = #{id}
+    </delete>
+
+    <delete id="deleteSysProcessByIds" parameterType="String">
+        delete from sys_process where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

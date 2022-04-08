@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProcessRuntimeMapper">
+    
+    <resultMap type="SysProcessRuntime" id="SysProcessRuntimeResult">
+        <result property="id"    column="id"    />
+        <result property="processMark"    column="process_mark"    />
+        <result property="status"    column="status"    />
+        <result property="previousNode"    column="previous_node"    />
+        <result property="previousApproverId"    column="previous_approver_id"    />
+        <result property="approverId"    column="approver_id"    />
+        <result property="formId"    column="form_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="processName"    column="process_name"    />
+        <result property="currentNode"    column="current_node"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectSysProcessRuntimeVo">
+        select id, process_mark, status, previous_node, previous_approver_id, approver_id, form_id, create_by, create_time, process_name, current_node, remark, del_flag from sys_process_runtime
+    </sql>
+
+    <select id="selectSysProcessRuntimeList" parameterType="SysProcessRuntime" resultMap="SysProcessRuntimeResult">
+        <include refid="selectSysProcessRuntimeVo"/>
+        <where>  
+            <if test="status != null "> and status = #{status}</if>
+            <if test="previousNode != null "> and previous_node = #{previousNode}</if>
+            <if test="previousApproverId != null "> and previous_approver_id = #{previousApproverId}</if>
+            <if test="approverId != null "> and approver_id = #{approverId}</if>
+            <if test="formId != null "> and form_id = #{formId}</if>
+            <if test="processName != null  and processName != ''"> and process_name like concat('%', #{processName}, '%')</if>
+            <if test="currentNode != null "> and current_node = #{currentNode}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysProcessRuntimeById" parameterType="Long" resultMap="SysProcessRuntimeResult">
+        <include refid="selectSysProcessRuntimeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysProcessRuntime" parameterType="SysProcessRuntime"  useGeneratedKeys="true" keyProperty="id">
+        insert into sys_process_runtime
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="processMark != null">process_mark,</if>
+            <if test="status != null">status,</if>
+            <if test="previousNode != null">previous_node,</if>
+            <if test="previousApproverId != null">previous_approver_id,</if>
+            <if test="approverId != null">approver_id,</if>
+            <if test="formId != null">form_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="processName != null">process_name,</if>
+            <if test="currentNode != null">current_node,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="processMark != null">#{processMark},</if>
+            <if test="status != null">#{status},</if>
+            <if test="previousNode != null">#{previousNode},</if>
+            <if test="previousApproverId != null">#{previousApproverId},</if>
+            <if test="approverId != null">#{approverId},</if>
+            <if test="formId != null">#{formId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="processName != null">#{processName},</if>
+            <if test="currentNode != null">#{currentNode},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysProcessRuntime" parameterType="SysProcessRuntime">
+        update sys_process_runtime
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="processMark != null">process_mark = #{processMark},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="previousNode != null">previous_node = #{previousNode},</if>
+            <if test="previousApproverId != null">previous_approver_id = #{previousApproverId},</if>
+            <if test="approverId != null">approver_id = #{approverId},</if>
+            <if test="formId != null">form_id = #{formId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="processName != null">process_name = #{processName},</if>
+            <if test="currentNode != null">current_node = #{currentNode},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysProcessRuntimeById" parameterType="Long">
+        delete from sys_process_runtime where id = #{id}
+    </delete>
+
+    <delete id="deleteSysProcessRuntimeByIds" parameterType="String">
+        delete from sys_process_runtime where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
