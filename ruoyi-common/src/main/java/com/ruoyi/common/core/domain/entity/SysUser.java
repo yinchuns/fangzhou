@@ -97,6 +97,9 @@ public class SysUser extends BaseEntity
     /** 部门名称 */
     private String deptName;
 
+    /** 岗位名称*/
+    private String postName;
+
     public SysUser()
     {
 
@@ -349,6 +352,15 @@ public class SysUser extends BaseEntity
             .append("remark", getRemark())
             .append("dept", getDept())
             .append("deptName", getDeptName())
+            .append("postName", getPostName())
             .toString();
+    }
+
+    public String getPostName() {
+        return postName;
+    }
+
+    public void setPostName(String postName) {
+        this.postName = postName;
     }
 }

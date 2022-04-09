@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import java.util.List;
+
 /**
  * 节点审核人对象 sys_process_node_approver
  * 
@@ -29,6 +31,9 @@ public class SysProcessNodeApprover extends BaseEntity
 
     /** 删除标识  （0代表存在 2代表删除） */
     private Integer delFlag;
+
+    /** 多个id */
+    private List<Long> approverIds;
 
     public void setId(Long id) 
     {
@@ -83,7 +88,16 @@ public class SysProcessNodeApprover extends BaseEntity
             .append("remark", getRemark())
             .append("delFlag", getDelFlag())
             .append("approverName", getApproverName())
+            .append("approverIds", getApproverIds())
             .toString();
     }
 
+
+    public List<Long> getApproverIds() {
+        return approverIds;
+    }
+
+    public void setApproverIds(List<Long> approverIds) {
+        this.approverIds = approverIds;
+    }
 }

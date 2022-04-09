@@ -157,18 +157,58 @@
       </el-table>
     </el-dialog>
 
+    <!--     新增审核人       -->
+    <el-dialog :title="title" :visible.sync="openAddApprover" width="1200px" append-to-body>
+      <el-form :model="queryUserParams" ref="queryUserForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form-item label="用户名称" prop="userName">
+          <el-input
+            v-model="queryUserParams.userName"
+            placeholder="请输入用户名称"
+            clearable
+            @keyup.enter.native="handleUserQuery"
+          />
+        </el-form-item>
+<!--        <el-form-item label="归属部门" prop="deptId">
+          <treeselect v-model="queryUserParams.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
+        </el-form-item>-->
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleUserQuery">搜索</el-button>
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+
+      <el-input v-model="remark" placeholder="请输入备注" />
+      <el-button type="primary" @click="addUserToApprover">新增</el-button>
+      <el-table v-loading="userLoading" :data="userList" @selection-change="handleSelectionUserChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="用户名" align="center" prop="userName" />
+        <el-table-column label="用户昵称 " align="center" prop="nickName" />
+        <el-table-column label="用户部门 " align="center" prop="remark" />
+        <el-table-column label="用户岗位 " align="center" prop="postName" />
+      </el-table>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { listNode, getNode, delNode, addNode, updateNode } from "@/api/system/node";
-import {delApprover, listApprover} from "../../../api/system/approver";
+import {addApprover, delApprover, listApprover, listUser} from "../../../api/system/approver";
+import {treeselect} from "../../../api/system/dept";
 
 export default {
   name: "Node",
   data() {
     return {
+      //新增审核人页面
+      // 部门树选项
+      deptOptions: undefined,
+      remark:"",
+      userList:[],
+      userLoading:true,
       openAddApprover: false,
+      userIds: [],
+      //操作审核人页面
       approverLoading:true,
       nodeApproverList: [],
       openApprover: false,
@@ -193,6 +233,11 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
+      queryUserParams: {
+        deptId: null,
+        userName: null,
+      },
+      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -209,12 +254,46 @@ export default {
   created() {
     this.getList();
     this.getApproverList();
+    this.getTreeselect();
+    this.getUserList();
   },
   methods: {
+    /** 新增审核人 */
+    addUserToApprover() {
+      const approverIds = this.userIds;
+      console.log("approverIds---------->"+approverIds);
+      const param= {
+        approverIds: approverIds,
+        remark:this.remark,
+        nodeId:this.nodeId
+      }
+      addApprover(param).then(response => {
+        this.$modal.msgSuccess("新增成功");
+        this.openAddApprover = false;
+        this.getApproverList();
+      });
+
+
+    },
+    /** 查询部门下拉树结构 */
+    getTreeselect() {
+      treeselect().then(response => {
+        this.deptOptions = response.data;
+      });
+    },
     /** 新增审核人*/
     addApprover() {
       this.openAddApprover = true;
-      this.title = "操作审核人";
+      this.getTreeselect();
+      this.title = "新增审核人";
+    },
+    /** 查询流程节点列表 */
+    getUserList() {
+      this.userLoading = true;
+      listUser(this.queryParams).then(response => {
+        this.userList = response.rows;
+        this.userLoading = false;
+      });
     },
     /** 查询流程节点列表 */
     getList() {
@@ -255,6 +334,10 @@ export default {
       };
       this.resetForm("form");
     },
+    /** 搜索用户按钮操作 */
+    handleUserQuery() {
+      this.getUserList();
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -265,6 +348,11 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
+    /** 重置用户按钮操作 */
+    resetUserQuery() {
+      this.resetForm("queryUserForm");
+      this.handleUserQuery();
+    },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
@@ -273,6 +361,13 @@ export default {
     },
     handleSelectionApproverChange(selection){
       this.approverIds = selection.map(item => item.id)
+      this.single = selection.length!==1
+      this.multiple = !selection.length
+    },
+    handleSelectionUserChange(selection) {
+      console.log("selection------------>"+selection.map(item => item.id));
+      this.userIds = selection.map(item => item.id)
+      console.log("userIds------------>"+this.userIds);
       this.single = selection.length!==1
       this.multiple = !selection.length
     },

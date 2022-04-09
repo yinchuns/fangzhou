@@ -1,9 +1,16 @@
 package com.ruoyi.system.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.system.service.ISysDeptService;
+import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,6 +40,47 @@ public class SysProcessNodeApproverController extends BaseController
 {
     @Autowired
     private ISysProcessNodeApproverService sysProcessNodeApproverService;
+
+    @Autowired
+    private ISysUserService sysUserService;
+
+    @Autowired
+    private ISysDeptService sysDeptService;
+
+    /**
+     * 通过部门和用户名获取用户信息
+     */
+    @GetMapping("/getUserlist")
+    public TableDataInfo list(SysUser u)
+    {
+        /*if(u.getUserName()==null && u.getDept()==null){
+            u.setUserName("0");
+        }*/
+        List<SysUser> uList=sysUserService.selectUserList(u);
+        if(uList.size()>0){
+            for(SysUser u1:uList){
+                String deptName="";
+                //获取部门信息
+               SysDept dept= sysDeptService.selectDeptById(u1.getDeptId());
+               if(dept.getAncestors().contains(",")){
+                   List<String> deptIds = Arrays.asList(dept.getAncestors().split(","));
+                   for(String id:deptIds){
+                       if(!id.equals("0")){
+                           SysDept dept1= sysDeptService.selectDeptById(Long.parseLong(id));
+                           deptName+=dept1.getDeptName()+"—";
+                       }
+                   }
+               }
+                deptName=deptName+dept.getDeptName();
+                u1.setDeptName(deptName);
+
+                //岗位角色
+                String postName=sysUserService.selectUserPostGroup(u1.getUserName());
+                u1.setPostName(postName);
+            }
+        }
+        return getDataTable(uList);
+    }
 
     /**
      * 查询节点审核人列表
@@ -75,10 +123,23 @@ public class SysProcessNodeApproverController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:approver:add')")
     @Log(title = "节点审核人", businessType = BusinessType.INSERT)
     @PostMapping
+    @Transactional(rollbackFor = Exception.class)
     public AjaxResult add(@RequestBody SysProcessNodeApprover sysProcessNodeApprover)
     {
-        sysProcessNodeApprover.setCreateBy(getUsername());
-        return toAjax(sysProcessNodeApproverService.insertSysProcessNodeApprover(sysProcessNodeApprover));
+        if(sysProcessNodeApprover.getApproverIds()!=null && sysProcessNodeApprover.getApproverIds().size()!=0){
+            for(Long i:sysProcessNodeApprover.getApproverIds()){
+                SysProcessNodeApprover a=new SysProcessNodeApprover();
+                if(sysProcessNodeApprover.getRemark()!=null){
+                    a.setRemark(sysProcessNodeApprover.getRemark());
+                }
+                a.setApproverId(i);
+                a.setNodeId(sysProcessNodeApprover.getNodeId());
+                a.setCreateBy(getUsername());
+                sysProcessNodeApproverService.insertSysProcessNodeApprover(a);
+            }
+        }
+
+        return AjaxResult.success("新增成功！");
     }
 
     /**

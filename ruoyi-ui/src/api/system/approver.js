@@ -1,5 +1,14 @@
 import request from '@/utils/request'
 
+// 查询用户列表
+export function listUser(query) {
+  return request({
+    url: '/system/process/approver/getUserlist',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询节点审核人列表
 export function listApprover(query) {
   return request({
