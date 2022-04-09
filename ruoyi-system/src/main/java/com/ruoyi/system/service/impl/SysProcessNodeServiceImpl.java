@@ -20,6 +20,16 @@ public class SysProcessNodeServiceImpl implements ISysProcessNodeService
     @Autowired
     private SysProcessNodeMapper sysProcessNodeMapper;
 
+    @Override
+    public Integer selectNodeIsAlready(SysProcessNode sysProcessNode) {
+        return sysProcessNodeMapper.selectNodeIsAlready(sysProcessNode);
+    }
+
+    @Override
+    public Integer selectProcessNodeCount(String processMark) {
+        return sysProcessNodeMapper.selectProcessNodeCount(processMark);
+    }
+
     /**
      * 查询流程节点
      * 

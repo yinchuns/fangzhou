@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 流程节点对象 sys_process_node
  * 
@@ -15,6 +17,9 @@ public class SysProcessNode extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
+    /** 流程名称 **/
+    private String processName;
+
     /** 节点ID */
     private Long id;
 
@@ -23,6 +28,7 @@ public class SysProcessNode extends BaseEntity
     private String processMark;
 
     /** 节点名称 */
+    @NotBlank(message = "节点名称不能为空")
     @Excel(name = "节点名称")
     private String nodeName;
 
@@ -32,6 +38,8 @@ public class SysProcessNode extends BaseEntity
 
     /** 删除标识  （0代表存在 2代表删除） */
     private Integer delFlag;
+
+
 
     public void setId(Long id) 
     {
@@ -79,6 +87,14 @@ public class SysProcessNode extends BaseEntity
         return delFlag;
     }
 
+    public String getProcessName() {
+        return processName;
+    }
+
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -89,6 +105,7 @@ public class SysProcessNode extends BaseEntity
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("delFlag", getDelFlag())
+            .append("processName", getProcessName())
             .toString();
     }
 }

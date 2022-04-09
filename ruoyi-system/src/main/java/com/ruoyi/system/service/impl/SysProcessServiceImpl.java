@@ -20,6 +20,11 @@ public class SysProcessServiceImpl implements ISysProcessService
     @Autowired
     private SysProcessMapper sysProcessMapper;
 
+    @Override
+    public SysProcess selectProcessByCondition(SysProcess sysProcess) {
+        return sysProcessMapper.selectProcessByCondition(sysProcess);
+    }
+
     /**
      * 查询流程
      * 

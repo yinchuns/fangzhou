@@ -5,6 +5,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 /**
  * 流程对象 sys_process
  * 
@@ -18,13 +21,19 @@ public class SysProcess extends BaseEntity
     /** KEY */
     private Long id;
 
+
+    /** 流程名称 */
+    @Valid
+    @NotBlank(message = "流程名称不能为空")
+    @Excel(name = "流程名称")
+    private String processName;
+
     /** 流程标识  */
+    @Valid
+    @NotBlank(message = "流程标识不能为空")
     @Excel(name = "流程标识 ")
     private String processMark;
 
-    /** 流程名称 */
-    @Excel(name = "流程名称")
-    private String processName;
 
     /** 对应表单名称 */
     @Excel(name = "对应表单名称")
@@ -40,6 +49,9 @@ public class SysProcess extends BaseEntity
 
     /** 删除标识（0代表存在 2代表删除） */
     private Integer delFlag;
+
+    /** 状态（0关闭 1开启） */
+    private Integer status;
 
     public void setId(Long id) 
     {
@@ -104,6 +116,13 @@ public class SysProcess extends BaseEntity
     {
         return delFlag;
     }
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
@@ -119,6 +138,7 @@ public class SysProcess extends BaseEntity
             .append("approvalFormUrl", getApprovalFormUrl())
             .append("updateFormUrl", getUpdateFormUrl())
             .append("delFlag", getDelFlag())
+            .append("status", getStatus())
             .toString();
     }
 }

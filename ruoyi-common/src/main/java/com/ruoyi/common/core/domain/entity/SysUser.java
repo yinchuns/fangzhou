@@ -94,6 +94,9 @@ public class SysUser extends BaseEntity
     /** 角色ID */
     private Long roleId;
 
+    /** 部门名称 */
+    private String deptName;
+
     public SysUser()
     {
 
@@ -314,6 +317,14 @@ public class SysUser extends BaseEntity
         this.roleId = roleId;
     }
 
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -337,6 +348,7 @@ public class SysUser extends BaseEntity
             .append("updateTime", getUpdateTime())
             .append("remark", getRemark())
             .append("dept", getDept())
+            .append("deptName", getDeptName())
             .toString();
     }
 }

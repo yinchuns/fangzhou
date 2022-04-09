@@ -2,8 +2,12 @@ package com.ruoyi.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.domain.SysProcess;
+import com.ruoyi.system.service.ISysProcessService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,6 +37,9 @@ public class SysProcessNodeController extends BaseController
 {
     @Autowired
     private ISysProcessNodeService sysProcessNodeService;
+
+    @Autowired
+    private ISysProcessService sysProcessService;
 
     /**
      * 查询流程节点列表
@@ -75,10 +82,17 @@ public class SysProcessNodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:node:add')")
     @Log(title = "流程节点", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody SysProcessNode sysProcessNode)
+    public AjaxResult add(@RequestBody @Validated  SysProcessNode sysProcessNode)
     {
         sysProcessNode.setCreateBy(getUsername());
-        //
+        //判断对应流程下的节点名称是否已存在
+        Integer isAlready=sysProcessNodeService.selectNodeIsAlready(sysProcessNode);
+        if(isAlready>0){
+            return AjaxResult.error("该流程下节点名称已存在！");
+        }
+        //生成节点序号
+        Integer step=sysProcessNodeService.selectProcessNodeCount(sysProcessNode.getProcessMark())+1;
+        sysProcessNode.setStep(step);
         return toAjax(sysProcessNodeService.insertSysProcessNode(sysProcessNode));
     }
 
@@ -102,6 +116,35 @@ public class SysProcessNodeController extends BaseController
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
-        return toAjax(sysProcessNodeService.deleteSysProcessNodeByIds(ids));
+        String processMark="";
+        for(Long id:ids){
+            SysProcessNode n=sysProcessNodeService.selectSysProcessNodeById(id);
+            processMark=n.getProcessMark();
+            SysProcess p=new SysProcess();
+            p.setProcessMark(n.getProcessMark());
+            p=sysProcessService.selectProcessByCondition(p);
+            if(p!=null && p.getStatus().equals(1)){
+                return AjaxResult.error("节点流程已开启，不能删除！");
+            }
+        }
+        try {
+            sysProcessNodeService.deleteSysProcessNodeByIds(ids);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+
+        //获取对应流程所有节点
+        SysProcessNode n1=new SysProcessNode();
+        n1.setProcessMark(processMark);
+        List<SysProcessNode> nodeList=sysProcessNodeService.selectSysProcessNodeList(n1);
+        Integer genStep=0;
+        //重新排列序号
+        for(SysProcessNode n:nodeList){
+            genStep++;
+            n.setStep(genStep);
+            sysProcessNodeService.updateSysProcessNode(n);
+        }
+        return AjaxResult.success("删除成功！");
     }
 }

@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="流程名称" prop="processName">
+        <el-input
+          v-model="queryParams.processName"
+          placeholder="请输入流程名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="流程标识  " prop="processMark">
         <el-input
           v-model="queryParams.processMark"
@@ -24,16 +32,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:node:add']"
-        >新增</el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -71,10 +69,10 @@
 
     <el-table v-loading="loading" :data="nodeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="节点ID" align="center" prop="id" />
+      <el-table-column label="流程名称" align="center" prop="processName"/>
       <el-table-column label="流程标识  " align="center" prop="processMark" />
-      <el-table-column label="节点名称" align="center" prop="nodeName" />
       <el-table-column label="节点序号" align="center" prop="step" />
+      <el-table-column label="节点名称" align="center" prop="nodeName" />
       <el-table-column label="创建人  " align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -83,6 +81,13 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="appointApprover(scope.row)"
+            v-hasPermi="['system:approver:list']"
+          >操作审核人</el-button>
           <el-button
             size="mini"
             type="text"
@@ -100,7 +105,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -130,16 +135,45 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 指派节点审核人 -->
+    <el-dialog :title="title" :visible.sync="openApprover" width="600px" append-to-body>
+      <el-button type="primary" @click="addApprover">新增审核人</el-button>
+      <el-table v-loading="approverLoading" :data="nodeApproverList" @selection-change="handleSelectionApproverChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="节点审核人" align="center" prop="approverName" />
+        <el-table-column label="备注 " align="center" prop="remark" />
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleApproverDelete(scope.row)"
+              v-hasPermi="['system:approver:remove']"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { listNode, getNode, delNode, addNode, updateNode } from "@/api/system/node";
+import {delApprover, listApprover} from "../../../api/system/approver";
 
 export default {
   name: "Node",
   data() {
     return {
+      openAddApprover: false,
+      approverLoading:true,
+      nodeApproverList: [],
+      openApprover: false,
+      approverIds: [],
+      nodeId: "",
       // 遮罩层
       loading: true,
       // 选中数组
@@ -174,8 +208,14 @@ export default {
   },
   created() {
     this.getList();
+    this.getApproverList();
   },
   methods: {
+    /** 新增审核人*/
+    addApprover() {
+      this.openAddApprover = true;
+      this.title = "操作审核人";
+    },
     /** 查询流程节点列表 */
     getList() {
       this.loading = true;
@@ -183,6 +223,17 @@ export default {
         this.nodeList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    /** 查询流程节点列表 */
+    getApproverList(nodeId) {
+      this.approverLoading = true;
+      const param= {
+        nodeId: nodeId
+      }
+      listApprover(param).then(response => {
+        this.approverList = response.rows;
+        this.approverLoading = false;
       });
     },
     // 取消按钮
@@ -193,6 +244,7 @@ export default {
     // 表单重置
     reset() {
       this.form = {
+        nodeId: null,
         id: null,
         processMark: null,
         nodeName: null,
@@ -219,11 +271,25 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
+    handleSelectionApproverChange(selection){
+      this.approverIds = selection.map(item => item.id)
+      this.single = selection.length!==1
+      this.multiple = !selection.length
+    },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
       this.title = "添加流程节点";
+    },
+    /** 操作审核人 */
+    appointApprover(row) {
+      this.reset();
+      const id = row.id
+      this.getApproverList(id);
+      this.nodeId=id;
+      this.openApprover = true;
+        this.title = "操作审核人";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -262,6 +328,15 @@ export default {
         return delNode(ids);
       }).then(() => {
         this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
+    },
+    handleApproverDelete(row){
+      const ids = row.id || this.approverIds;
+      this.$modal.confirm('是否确认删除该节点审核人？').then(function() {
+        return delApprover(ids);
+      }).then(() => {
+        this.getApproverList(this.nodeId);
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },

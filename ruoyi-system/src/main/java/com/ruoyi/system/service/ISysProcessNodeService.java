@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import java.util.List;
 import com.ruoyi.system.domain.SysProcessNode;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 流程节点Service接口
@@ -11,6 +12,20 @@ import com.ruoyi.system.domain.SysProcessNode;
  */
 public interface ISysProcessNodeService 
 {
+    /**
+     * 根据节点名称和流程标识查询 该节点名称在对应流程下是否已经存在
+     * @param sysProcessNode
+     * @return
+     */
+    Integer selectNodeIsAlready (SysProcessNode sysProcessNode);
+
+    /**
+     * 根据流程标识获取对应流程下节点数量
+     * @param processMark
+     * @return count
+     */
+    Integer selectProcessNodeCount(@Param("processMark") String processMark);
+
     /**
      * 查询流程节点
      * 

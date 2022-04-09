@@ -12,18 +12,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="delFlag"    column="del_flag"    />
+        <result property="processName"    column="process_name"    />
     </resultMap>
+
+    <select id="selectProcessNodeCount" parameterType="String" resultType="java.lang.Integer">
+        select count(id) from sys_process_node  where process_mark = #{processMark}
+    </select>
+
+    <select id="selectNodeIsAlready"  parameterType="SysProcessNode" resultType="java.lang.Integer">
+        select count(id) from sys_process_node  where process_mark = #{processMark} and node_name=#{nodeName}
+    </select>
 
     <sql id="selectSysProcessNodeVo">
         select id, process_mark, node_name, step, create_by, create_time, del_flag from sys_process_node
     </sql>
 
     <select id="selectSysProcessNodeList" parameterType="SysProcessNode" resultMap="SysProcessNodeResult">
-        <include refid="selectSysProcessNodeVo"/>
+        <!--<include refid="selectSysProcessNodeVo"/>-->
+        select p.process_name,n.id, n.process_mark, n.node_name, n.step, n.create_by, n.create_time, n.del_flag from sys_process_node n
+        left join sys_process p on p.process_mark=n.process_mark
         <where>  
-            <if test="processMark != null  and processMark != ''"> and process_mark = #{processMark}</if>
-            <if test="nodeName != null  and nodeName != ''"> and node_name like concat('%', #{nodeName}, '%')</if>
+            <if test="processMark != null  and processMark != ''"> and n.process_mark = #{processMark}</if>
+            <if test="nodeName != null  and nodeName != ''"> and n.node_name like concat('%', #{nodeName}, '%')</if>
+            <if test="processName != null  and processName != ''"> and p.process_name = #{processName}</if>
         </where>
+        order by n.step asc
     </select>
     
     <select id="selectSysProcessNodeById" parameterType="Long" resultMap="SysProcessNodeResult">

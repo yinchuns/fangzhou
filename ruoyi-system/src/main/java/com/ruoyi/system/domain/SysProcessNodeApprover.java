@@ -24,6 +24,9 @@ public class SysProcessNodeApprover extends BaseEntity
     /** 节点审核人 */
     private Long approverId;
 
+    /** 审核人名称 */
+    private String approverName;
+
     /** 删除标识  （0代表存在 2代表删除） */
     private Integer delFlag;
 
@@ -63,6 +66,13 @@ public class SysProcessNodeApprover extends BaseEntity
     {
         return delFlag;
     }
+    public String getApproverName() {
+        return approverName;
+    }
+
+    public void setApproverName(String approverName) {
+        this.approverName = approverName;
+    }
 
     @Override
     public String toString() {
@@ -72,6 +82,8 @@ public class SysProcessNodeApprover extends BaseEntity
             .append("approverId", getApproverId())
             .append("remark", getRemark())
             .append("delFlag", getDelFlag())
+            .append("approverName", getApproverName())
             .toString();
     }
+
 }

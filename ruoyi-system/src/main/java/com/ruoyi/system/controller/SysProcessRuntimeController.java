@@ -2,8 +2,12 @@ package com.ruoyi.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.domain.SysProcess;
+import com.ruoyi.system.service.ISysProcessService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,6 +37,8 @@ public class SysProcessRuntimeController extends BaseController
 {
     @Autowired
     private ISysProcessRuntimeService sysProcessRuntimeService;
+    @Autowired
+    private ISysProcessService sysProcessService;
 
     /**
      * 查询流程实例列表
@@ -75,8 +81,21 @@ public class SysProcessRuntimeController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:runtime:add')")
     @Log(title = "流程实例", businessType = BusinessType.INSERT)
     @PostMapping
+    @Transactional(rollbackFor = Exception.class)
     public AjaxResult add(@RequestBody SysProcessRuntime sysProcessRuntime)
     {
+        //获取对应流程信息
+        SysProcess p=new SysProcess();
+        p.setProcessMark(sysProcessRuntime.getProcessMark());
+        p=sysProcessService.selectProcessByCondition(p);
+        //判断是否需要开启
+        if(p.getStatus().equals(0)){
+            //开启流程
+            SysProcess p1=new SysProcess();
+            p1.setStatus(1);
+            p1.setId(p.getId());
+            sysProcessService.updateSysProcess(p1);
+        }
         sysProcessRuntime.setCreateBy(getUsername());
         return toAjax(sysProcessRuntimeService.insertSysProcessRuntime(sysProcessRuntime));
     }

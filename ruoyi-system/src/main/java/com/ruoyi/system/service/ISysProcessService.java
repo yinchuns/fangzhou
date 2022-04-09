@@ -12,6 +12,13 @@ import com.ruoyi.system.domain.SysProcess;
 public interface ISysProcessService 
 {
     /**
+     * 根据条件查询流程数据
+     * @param sysProcess 流程
+     * @return 流程
+     */
+    public SysProcess selectProcessByCondition(SysProcess sysProcess);
+
+    /**
      * 查询流程
      * 
      * @param id 流程主键

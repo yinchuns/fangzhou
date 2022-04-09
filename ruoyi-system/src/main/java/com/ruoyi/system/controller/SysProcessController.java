@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -75,8 +76,27 @@ public class SysProcessController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:process:add')")
     @Log(title = "流程", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody SysProcess sysProcess)
+    public AjaxResult add(@RequestBody @Validated SysProcess sysProcess)
     {
+        //判断是否流程名称是否存在
+        if(sysProcess.getProcessName()!=null && !("").equals(sysProcess.getProcessName())){
+            SysProcess p1=new SysProcess();
+            p1.setProcessName(sysProcess.getProcessName());
+            p1=sysProcessService.selectProcessByCondition(p1);
+            if(p1!=null){
+                return AjaxResult.error("该流程名称已存在！");
+            }
+        }
+
+        //判断流程标识是否存在
+        if(sysProcess.getProcessMark()!=null && !("").equals(sysProcess.getProcessMark())){
+            SysProcess p2=new SysProcess();
+            p2.setProcessMark(sysProcess.getProcessMark());
+            p2=sysProcessService.selectProcessByCondition(p2);
+            if(p2!=null){
+                return AjaxResult.error("该流程标识已存在！");
+            }
+        }
         sysProcess.setCreateBy(getUsername());
         return toAjax(sysProcessService.insertSysProcess(sysProcess));
     }
@@ -87,8 +107,29 @@ public class SysProcessController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:process:edit')")
     @Log(title = "流程", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody SysProcess sysProcess)
+    public AjaxResult edit(@RequestBody @Validated SysProcess sysProcess)
     {
+        //获取流程信息
+        SysProcess p=sysProcessService.selectSysProcessById(sysProcess.getId());
+        //判断是否流程名称是否存在
+        if(!sysProcess.getProcessName().equals(p.getProcessName())){
+            SysProcess p1=new SysProcess();
+            p1.setProcessName(sysProcess.getProcessName());
+            p1=sysProcessService.selectProcessByCondition(p1);
+            if(p1!=null){
+                return AjaxResult.error("该流程名称已存在！");
+            }
+        }
+        //判断流程标识是否存在
+        if(!sysProcess.getProcessMark().equals(p.getProcessMark())){
+            SysProcess p2=new SysProcess();
+            p2.setProcessMark(sysProcess.getProcessMark());
+            p2=sysProcessService.selectProcessByCondition(p2);
+            if(p2!=null){
+                return AjaxResult.error("该流程标识已存在！");
+            }
+        }
+
         sysProcess.setUpdateBy(getUsername());
         return toAjax(sysProcessService.updateSysProcess(sysProcess));
     }
@@ -101,6 +142,13 @@ public class SysProcessController extends BaseController
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
+        for(Long id:ids){
+            //检查对应流程是否已经开启
+            SysProcess p= sysProcessService.selectSysProcessById(id);
+            if(p.getStatus().equals(1)){
+                return AjaxResult.error("流程 '"+p.getProcessName()+"' 已开启，不能删除！");
+            }
+        }
         return toAjax(sysProcessService.deleteSysProcessByIds(ids));
     }
 }

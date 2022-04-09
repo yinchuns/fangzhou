@@ -10,6 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="approverId"    column="approver_id"    />
         <result property="remark"    column="remark"    />
         <result property="delFlag"    column="del_flag"    />
+        <result property="approverName"    column="approver_name"    />
     </resultMap>
 
     <sql id="selectSysProcessNodeApproverVo">
@@ -17,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectSysProcessNodeApproverList" parameterType="SysProcessNodeApprover" resultMap="SysProcessNodeApproverResult">
-        <include refid="selectSysProcessNodeApproverVo"/>
+        select u.user_name as approver_name,a.id, a.node_id, a.approver_id, a.remark, a.del_flag from sys_process_node_approver a left join sys_user u on a.approver_id=u.user_id
         <where>  
         </where>
     </select>

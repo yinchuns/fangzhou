@@ -134,9 +134,6 @@
         <el-form-item label="修改表单页面地址" prop="updateFormUrl">
           <el-input v-model="form.updateFormUrl" placeholder="请输入修改表单页面地址" />
         </el-form-item>
-        <!--<el-form-item label="删除标识" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标识" />
-        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -146,8 +143,8 @@
 
 
 
-
-    <!-- 添加或修改节点对话框 -->
+<!---------------------------------------------------->
+    <!-- 配置流程节点对话框 -->
     <el-dialog :title="title" :visible.sync="openNode" width="1200px" append-to-body>
       <el-form ref="formNode" :model="formNode" :rules="rules" label-width="80px">
         <el-form-item label="节点名称" prop="processName">
