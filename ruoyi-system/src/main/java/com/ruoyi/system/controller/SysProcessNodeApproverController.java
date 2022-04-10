@@ -11,6 +11,7 @@ import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,9 +54,10 @@ public class SysProcessNodeApproverController extends BaseController
     @GetMapping("/getUserlist")
     public TableDataInfo list(SysUser u)
     {
-        /*if(u.getUserName()==null && u.getDept()==null){
+        if((u.getUserName()==null || ("").equals(u.getUserName())) && ( u.getDeptId()==null || ("").equals(u.getDeptId()))){
             u.setUserName("0");
-        }*/
+        }
+
         List<SysUser> uList=sysUserService.selectUserList(u);
         if(uList.size()>0){
             for(SysUser u1:uList){
@@ -124,19 +126,25 @@ public class SysProcessNodeApproverController extends BaseController
     @Log(title = "节点审核人", businessType = BusinessType.INSERT)
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
-    public AjaxResult add(@RequestBody SysProcessNodeApprover sysProcessNodeApprover)
+    public AjaxResult add(@RequestBody @Validated SysProcessNodeApprover sysProcessNodeApprover)
     {
         if(sysProcessNodeApprover.getApproverIds()!=null && sysProcessNodeApprover.getApproverIds().size()!=0){
             for(Long i:sysProcessNodeApprover.getApproverIds()){
                 SysProcessNodeApprover a=new SysProcessNodeApprover();
+                a.setApproverId(i);
+                a.setNodeId(sysProcessNodeApprover.getNodeId());
+                List<SysProcessNodeApprover> aList=sysProcessNodeApproverService.selectSysProcessNodeApproverList(a);
+                if(aList!=null && aList.size()!=0){
+                    continue;
+                }
                 if(sysProcessNodeApprover.getRemark()!=null){
                     a.setRemark(sysProcessNodeApprover.getRemark());
                 }
-                a.setApproverId(i);
-                a.setNodeId(sysProcessNodeApprover.getNodeId());
                 a.setCreateBy(getUsername());
                 sysProcessNodeApproverService.insertSysProcessNodeApprover(a);
             }
+        }else{
+            return AjaxResult.error("请选择审核人！");
         }
 
         return AjaxResult.success("新增成功！");

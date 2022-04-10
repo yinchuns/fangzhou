@@ -87,7 +87,7 @@
             icon="el-icon-edit"
             @click="appointApprover(scope.row)"
             v-hasPermi="['system:approver:list']"
-          >操作审核人</el-button>
+          >审核人</el-button>
           <el-button
             size="mini"
             type="text"
@@ -138,7 +138,13 @@
 
     <!-- 指派节点审核人 -->
     <el-dialog :title="title" :visible.sync="openApprover" width="600px" append-to-body>
-      <el-button type="primary" @click="addApprover">新增审核人</el-button>
+      <el-button type="primary"   plain
+                 icon="el-icon-plus"
+                 @click="addApproverQuery">新增审核人</el-button>
+      <el-button type="danger"
+                 plain
+                 icon="el-icon-delete"  :disabled="multiple"
+                 @click="handleApproverDelete">删除</el-button>
       <el-table v-loading="approverLoading" :data="nodeApproverList" @selection-change="handleSelectionApproverChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="节点审核人" align="center" prop="approverName" />
@@ -171,19 +177,25 @@
 <!--        <el-form-item label="归属部门" prop="deptId">
           <treeselect v-model="queryUserParams.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
         </el-form-item>-->
+
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" size="mini" @click="handleUserQuery">搜索</el-button>
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
         </el-form-item>
-      </el-form>
+        </el-form>
 
-      <el-input v-model="remark" placeholder="请输入备注" />
-      <el-button type="primary" @click="addUserToApprover">新增</el-button>
+      <el-form>
+      <el-form-item label="备注" prop="remark">
+      <el-input   v-model="remark" placeholder="请输入备注"   style="width:50%;margin-left: 28px"/>
+      </el-form-item>
+      </el-form>
+      <el-button type="primary"    plain
+                 icon="el-icon-plus"  @click="addUserToApprover">新增</el-button>
       <el-table v-loading="userLoading" :data="userList" @selection-change="handleSelectionUserChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="用户名" align="center" prop="userName" />
         <el-table-column label="用户昵称 " align="center" prop="nickName" />
-        <el-table-column label="用户部门 " align="center" prop="remark" />
+        <el-table-column label="用户部门 " align="center" prop="deptName" />
         <el-table-column label="用户岗位 " align="center" prop="postName" />
       </el-table>
     </el-dialog>
@@ -212,7 +224,7 @@ export default {
       approverLoading:true,
       nodeApproverList: [],
       openApprover: false,
-      approverIds: [],
+      approverAllIds: [],
       nodeId: "",
       // 遮罩层
       loading: true,
@@ -261,7 +273,6 @@ export default {
     /** 新增审核人 */
     addUserToApprover() {
       const approverIds = this.userIds;
-      console.log("approverIds---------->"+approverIds);
       const param= {
         approverIds: approverIds,
         remark:this.remark,
@@ -270,7 +281,7 @@ export default {
       addApprover(param).then(response => {
         this.$modal.msgSuccess("新增成功");
         this.openAddApprover = false;
-        this.getApproverList();
+        this.getApproverList(this.nodeId);
       });
 
 
@@ -282,15 +293,17 @@ export default {
       });
     },
     /** 新增审核人*/
-    addApprover() {
+    addApproverQuery() {
       this.openAddApprover = true;
       this.getTreeselect();
+      this.getUserList();
       this.title = "新增审核人";
     },
-    /** 查询流程节点列表 */
+    /** 查询用户列表 */
     getUserList() {
       this.userLoading = true;
-      listUser(this.queryParams).then(response => {
+      console.log(this.queryUserParams);
+      listUser(this.queryUserParams).then(response => {
         this.userList = response.rows;
         this.userLoading = false;
       });
@@ -311,7 +324,7 @@ export default {
         nodeId: nodeId
       }
       listApprover(param).then(response => {
-        this.approverList = response.rows;
+        this.nodeApproverList = response.rows;
         this.approverLoading = false;
       });
     },
@@ -360,13 +373,13 @@ export default {
       this.multiple = !selection.length
     },
     handleSelectionApproverChange(selection){
-      this.approverIds = selection.map(item => item.id)
+      this.approverAllIds = selection.map(item => item.id)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
     handleSelectionUserChange(selection) {
-      console.log("selection------------>"+selection.map(item => item.id));
-      this.userIds = selection.map(item => item.id)
+      console.log("selection------------>"+selection.map(item => item.userId));
+      this.userIds = selection.map(item => item.userId);
       console.log("userIds------------>"+this.userIds);
       this.single = selection.length!==1
       this.multiple = !selection.length
@@ -419,7 +432,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除流程节点编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除流程节点"' + row.nodeName + '"的数据项？').then(function() {
         return delNode(ids);
       }).then(() => {
         this.getList();
@@ -427,7 +440,7 @@ export default {
       }).catch(() => {});
     },
     handleApproverDelete(row){
-      const ids = row.id || this.approverIds;
+      const ids = row.id || this.approverAllIds;
       this.$modal.confirm('是否确认删除该节点审核人？').then(function() {
         return delApprover(ids);
       }).then(() => {

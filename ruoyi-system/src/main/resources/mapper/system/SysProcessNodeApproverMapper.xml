@@ -19,7 +19,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSysProcessNodeApproverList" parameterType="SysProcessNodeApprover" resultMap="SysProcessNodeApproverResult">
         select u.user_name as approver_name,a.id, a.node_id, a.approver_id, a.remark, a.del_flag from sys_process_node_approver a left join sys_user u on a.approver_id=u.user_id
-        <where>  
+        <where>
+            <if test="nodeId != null  and nodeId != ''">and node_id = #{nodeId}</if>
+            <if test="approverId != null  and approverId != ''">and approver_id = #{approverId}</if>
         </where>
     </select>
     

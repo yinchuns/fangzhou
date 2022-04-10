@@ -151,7 +151,7 @@
           <el-input v-model="formNode.nodeName" placeholder="请输入节点名称" />
         </el-form-item>
       </el-form>
-      <el-button type="primary" @click="submitNodeForm">新增</el-button>
+      <el-button type="primary"   plain  icon="el-icon-plus" @click="submitNodeForm">新增</el-button>
       <el-table v-loading="nodeLoading" :data="processNodeList" @selection-change="handleSelectionNodeChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="节点名称" align="center" prop="nodeName" />
