@@ -5,15 +5,26 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import java.util.List;
+
 /**
  * 流程实例对象 sys_process_runtime
  * 
  * @author ruoyi
  * @date 2022-04-08
  */
-public class SysProcessRuntime extends BaseEntity
+public class  SysProcessRuntime extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
+
+    /** 流程记录日志对象 */
+    private SysProcessNotice sysProcessNotice;
+
+    /** 所有流程记录日志  */
+    private List<SysProcessNotice> sysProcessNoticeList;
+
+    /** 所有节点 */
+    private List<SysProcessNode> sysProcessNodeList;
 
     /** 流程实例id */
     private Long id;
@@ -159,6 +170,33 @@ public class SysProcessRuntime extends BaseEntity
             .append("currentNode", getCurrentNode())
             .append("remark", getRemark())
             .append("delFlag", getDelFlag())
+            .append("sysProcessNotice", getSysProcessNotice())
+            .append("sysProcessNoticeList", getSysProcessNoticeList())
+            .append("sysProcessNodeList", getSysProcessNodeList())
             .toString();
+    }
+
+    public SysProcessNotice getSysProcessNotice() {
+        return sysProcessNotice;
+    }
+
+    public void setSysProcessNotice(SysProcessNotice sysProcessNotice) {
+        this.sysProcessNotice = sysProcessNotice;
+    }
+
+    public List<SysProcessNotice> getSysProcessNoticeList() {
+        return sysProcessNoticeList;
+    }
+
+    public void setSysProcessNoticeList(List<SysProcessNotice> sysProcessNoticeList) {
+        this.sysProcessNoticeList = sysProcessNoticeList;
+    }
+
+    public List<SysProcessNode> getSysProcessNodeList() {
+        return sysProcessNodeList;
+    }
+
+    public void setSysProcessNodeList(List<SysProcessNode> sysProcessNodeList) {
+        this.sysProcessNodeList = sysProcessNodeList;
     }
 }

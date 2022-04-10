@@ -3,8 +3,11 @@ package com.ruoyi.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.system.domain.SysProcess;
+import com.ruoyi.system.service.ISysProcessNodeService;
 import com.ruoyi.system.service.ISysProcessService;
+import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,10 @@ public class SysProcessRuntimeController extends BaseController
     private ISysProcessRuntimeService sysProcessRuntimeService;
     @Autowired
     private ISysProcessService sysProcessService;
+    @Autowired
+    private ISysUserService sysUserService;
+    @Autowired
+    private ISysProcessNodeService sysProcessNodeService;
 
     /**
      * 查询流程实例列表
@@ -96,7 +103,16 @@ public class SysProcessRuntimeController extends BaseController
             p1.setId(p.getId());
             sysProcessService.updateSysProcess(p1);
         }
+        //初始化流程实例状态： 审批中
+        sysProcessRuntime.setStatus(1);
+        //写入流程名称
+        sysProcessRuntime.setProcessName(p.getProcessName());
+        //写入创建人
         sysProcessRuntime.setCreateBy(getUsername());
+        //初始化上一个节点
+        sysProcessRuntime.setPreviousNode(0);
+        //初始化当前节点
+        sysProcessRuntime.setCurrentNode(1);
         return toAjax(sysProcessRuntimeService.insertSysProcessRuntime(sysProcessRuntime));
     }
 
@@ -108,6 +124,35 @@ public class SysProcessRuntimeController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody SysProcessRuntime sysProcessRuntime)
     {
+        //获取当前流程信息
+        SysProcessRuntime pr=sysProcessRuntimeService.selectSysProcessRuntimeById(sysProcessRuntime.getId());
+        //判断当前是否是被退回，若是退回，就退回给发起人
+        if(sysProcessRuntime.getStatus().equals(2)){
+            sysProcessRuntime.setCurrentNode(0);
+            //获取发起人信息
+            SysUser u=sysUserService.selectUserByUserName(pr.getCreateBy());
+            sysProcessRuntime.setApproverId(u.getUserId());
+        }
+
+        //判断当前流程是否是退回后再提交（表单被退回后发起人修改完成了再提交）
+        if(pr.getStatus().equals(2)){
+            sysProcessRuntime.setCurrentNode(pr.getPreviousNode());
+            sysProcessRuntime.setApproverId(pr.getPreviousApproverId());
+        }
+
+        //既不是退回，也不是退回后再提交，判断当前节点是否已结束
+        if(!sysProcessRuntime.getStatus().equals(2) && !pr.getStatus().equals(2)){
+            Integer nextNode=pr.getCurrentNode()+1;
+            //获取当前流程最大节点
+            Integer maxNode=sysProcessNodeService.selectMaxNode(pr.getProcessMark());
+            if(nextNode>maxNode){
+                sysProcessRuntime.setStatus(3);
+            }
+            sysProcessRuntime.setCurrentNode(nextNode);
+        }
+
+        sysProcessRuntime.setPreviousNode(pr.getCurrentNode());
+        sysProcessRuntime.setPreviousApproverId(pr.getApproverId());
         return toAjax(sysProcessRuntimeService.updateSysProcessRuntime(sysProcessRuntime));
     }
 

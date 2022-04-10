@@ -13,6 +13,13 @@ import org.apache.ibatis.annotations.Param;
 public interface ISysProcessNodeService 
 {
     /**
+     * 获取对应流程最大节点
+     * @param processMark 流程标识
+     * @return 节点序号
+     */
+    Integer selectMaxNode(@Param("processMark") String processMark);
+
+    /**
      * 根据节点名称和流程标识查询 该节点名称在对应流程下是否已经存在
      * @param sysProcessNode
      * @return
