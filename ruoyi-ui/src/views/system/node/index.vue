@@ -200,8 +200,8 @@
       </el-table>
 
       <pagination
-        v-show="total>0"
-        :total="total"
+        v-show="totalU>0"
+        :total="totalU"
         :page.sync="queryUserParams.pageNum"
         :limit.sync="queryUserParams.pageSize"
         @pagination="getUserList"
@@ -249,6 +249,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      //用户列表总条数
+      totalU: 0,
       // 流程节点表格数据
       nodeList: [],
       // 弹出层标题
@@ -319,7 +321,7 @@ export default {
       listUser(this.queryUserParams).then(response => {
         this.userList = response.rows;
         this.userLoading = false;
-        this.total = response.total;
+        this.totalU = response.total;
       });
     },
     /** 查询流程节点列表 */
