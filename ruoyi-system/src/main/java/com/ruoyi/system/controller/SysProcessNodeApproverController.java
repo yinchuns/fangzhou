@@ -54,9 +54,10 @@ public class SysProcessNodeApproverController extends BaseController
     @GetMapping("/getUserlist")
     public TableDataInfo list(SysUser u)
     {
-        if((u.getUserName()==null || ("").equals(u.getUserName())) && ( u.getDeptId()==null || ("").equals(u.getDeptId()))){
+        /*if((u.getUserName()==null || ("").equals(u.getUserName())) && ( u.getDeptId()==null || ("").equals(u.getDeptId()))){
             u.setUserName("0");
-        }
+        }*/
+        startPage();
 
         List<SysUser> uList=sysUserService.selectUserList(u);
         if(uList.size()>0){

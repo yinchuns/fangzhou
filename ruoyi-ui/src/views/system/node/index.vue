@@ -174,9 +174,9 @@
             @keyup.enter.native="handleUserQuery"
           />
         </el-form-item>
-<!--        <el-form-item label="归属部门" prop="deptId">
-          <treeselect v-model="queryUserParams.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
-        </el-form-item>-->
+        <el-form-item label="归属部门" prop="deptId" >
+          <treeselect v-model="queryUserParams.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" style="width:50%;margin-left: 70px"/>
+        </el-form-item>
 
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" size="mini" @click="handleUserQuery">搜索</el-button>
@@ -198,6 +198,14 @@
         <el-table-column label="用户部门 " align="center" prop="deptName" />
         <el-table-column label="用户岗位 " align="center" prop="postName" />
       </el-table>
+
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryUserParams.pageNum"
+        :limit.sync="queryUserParams.pageSize"
+        @pagination="getUserList"
+      />
     </el-dialog>
 
   </div>
@@ -207,9 +215,12 @@
 import { listNode, getNode, delNode, addNode, updateNode } from "@/api/system/node";
 import {addApprover, delApprover, listApprover, listUser} from "../../../api/system/approver";
 import {treeselect} from "../../../api/system/dept";
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "Node",
+  components: { Treeselect },
   data() {
     return {
       //新增审核人页面
@@ -246,6 +257,8 @@ export default {
       open: false,
       // 查询参数
       queryUserParams: {
+        pageNum: 1,
+        pageSize: 10,
         deptId: null,
         userName: null,
       },
@@ -306,6 +319,7 @@ export default {
       listUser(this.queryUserParams).then(response => {
         this.userList = response.rows;
         this.userLoading = false;
+        this.total = response.total;
       });
     },
     /** 查询流程节点列表 */
