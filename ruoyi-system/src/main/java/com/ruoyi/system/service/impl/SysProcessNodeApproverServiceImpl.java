@@ -19,6 +19,11 @@ public class SysProcessNodeApproverServiceImpl implements ISysProcessNodeApprove
     @Autowired
     private SysProcessNodeApproverMapper sysProcessNodeApproverMapper;
 
+    @Override
+    public Integer selectApproverCountByNode(Long nodeId) {
+        return sysProcessNodeApproverMapper.selectApproverCountByNode(nodeId);
+    }
+
     /**
      * 查询节点审核人
      * 

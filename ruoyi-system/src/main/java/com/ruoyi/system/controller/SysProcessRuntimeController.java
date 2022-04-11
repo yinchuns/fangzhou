@@ -1,13 +1,15 @@
 package com.ruoyi.system.controller;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.system.domain.SysProcess;
-import com.ruoyi.system.service.ISysProcessNodeService;
-import com.ruoyi.system.service.ISysProcessService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.domain.SysProcessNode;
+import com.ruoyi.system.domain.SysProcessNotice;
+import com.ruoyi.system.service.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,6 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.SysProcessRuntime;
-import com.ruoyi.system.service.ISysProcessRuntimeService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 
@@ -46,6 +47,8 @@ public class SysProcessRuntimeController extends BaseController
     private ISysUserService sysUserService;
     @Autowired
     private ISysProcessNodeService sysProcessNodeService;
+    @Autowired
+    private ISysProcessNoticeService sysProcessNoticeService;
 
     /**
      * 查询流程实例列表
@@ -79,7 +82,57 @@ public class SysProcessRuntimeController extends BaseController
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
-        return AjaxResult.success(sysProcessRuntimeService.selectSysProcessRuntimeById(id));
+        SysProcessRuntime sysProcessRuntime=sysProcessRuntimeService.selectSysProcessRuntimeById(id);
+        //根据流程标志获取对应所有流程节点
+        SysProcessNode node=new SysProcessNode();
+        node.setProcessMark(sysProcessRuntime.getProcessMark());
+        List<SysProcessNode> nodeList= sysProcessNodeService.selectSysProcessNodeList(node);
+
+        //生成流程节点树
+        genProcessNodeTree(sysProcessRuntime, nodeList);
+
+        //根据流程实例id获取流程审核日志
+        List<SysProcessNotice> noticeList=sysProcessNoticeService.selectSysProcessNoticeByProcessRuntimeId(id);
+        sysProcessRuntime.setSysProcessNoticeList(noticeList);
+
+        return AjaxResult.success(sysProcessRuntime);
+    }
+
+    /**
+     * 生成流程节点树
+     * @param sysProcessRuntime  流程实例对象
+     * @param nodeList   对应流程所有节点
+     */
+    private void genProcessNodeTree(SysProcessRuntime sysProcessRuntime, List<SysProcessNode> nodeList) {
+        //生成流程节点树
+        List<SysProcessNode> showNodeList=new ArrayList<SysProcessNode>();
+        SysProcessNode node0=new SysProcessNode();
+        //发起人节点
+        node0.setNodeName("发起人");
+        node0.setStep(0);
+        if(sysProcessRuntime.getCurrentNode().equals(0)){
+            node0.setCheckStatus("1");
+        }else{
+            node0.setCheckStatus("0");
+        }
+        showNodeList.add(node0);
+        //流程节点
+        for(SysProcessNode n: nodeList){
+            if(sysProcessRuntime.getCurrentNode().equals(n.getStep())){
+                n.setCheckStatus("1");
+            }else{
+                n.setCheckStatus("0");
+            }
+            showNodeList.add(n);
+        }
+        //通过节点
+        SysProcessNode nodePass=new SysProcessNode();
+        nodePass.setNodeName("通过");
+        if(sysProcessRuntime.getStatus().equals(3)){
+            nodePass.setCheckStatus("1");
+        }
+        showNodeList.add(nodePass);
+        sysProcessRuntime.setSysProcessNodeList(showNodeList);
     }
 
     /**
@@ -127,7 +180,7 @@ public class SysProcessRuntimeController extends BaseController
         //获取当前流程信息
         SysProcessRuntime pr=sysProcessRuntimeService.selectSysProcessRuntimeById(sysProcessRuntime.getId());
         //判断当前是否是被退回，若是退回，就退回给发起人
-        if(sysProcessRuntime.getStatus().equals(2)){
+        if(sysProcessRuntime.getStatus()!=null && sysProcessRuntime.getStatus().equals(2)){
             sysProcessRuntime.setCurrentNode(0);
             //获取发起人信息
             SysUser u=sysUserService.selectUserByUserName(pr.getCreateBy());
@@ -150,10 +203,49 @@ public class SysProcessRuntimeController extends BaseController
             }
             sysProcessRuntime.setCurrentNode(nextNode);
         }
-
+        //写入上一个审批节点
         sysProcessRuntime.setPreviousNode(pr.getCurrentNode());
+        //写入上一个审批人
         sysProcessRuntime.setPreviousApproverId(pr.getApproverId());
+
+        //写入流程审批日志
+        setProcesLog(sysProcessRuntime, pr);
+
         return toAjax(sysProcessRuntimeService.updateSysProcessRuntime(sysProcessRuntime));
+    }
+
+    /**
+     * 写入流程审批日志
+     * @param sysProcessRuntime 审批中流程实例
+     * @param pr  当前流程实例
+     */
+    private void setProcesLog(SysProcessRuntime sysProcessRuntime, SysProcessRuntime pr) {
+        //流程审批日志 sysProcessNoticeService
+        SysProcessNotice notice=new SysProcessNotice();
+        notice.setProcessRuntimeId(pr.getId());
+        //写入审批状态
+        if(sysProcessRuntime.getStatus()!=null && sysProcessRuntime.getStatus().equals(2)){
+            notice.setApproveStatus(2);
+        }else{
+            notice.setApproveStatus(1);
+        }
+        //写入审批人
+        SysUser u=sysUserService.selectUserById(pr.getApproverId());
+        notice.setApprover(u.getUserName());
+        //写入审批时间
+        notice.setApproveTime(new Date());
+        //写入审批信息
+        if(sysProcessRuntime.getSysProcessNotice()!=null && sysProcessRuntime.getSysProcessNotice().getApproveMsg()!=null){
+            notice.setApproveMsg(sysProcessRuntime.getSysProcessNotice().getApproveMsg());
+        }
+        //写入节点名称
+        //根据流程标识和当前节点，获取节点名称
+        SysProcessNode node=new SysProcessNode();
+        node.setProcessMark(pr.getProcessMark());
+        node.setStep(pr.getCurrentNode());
+        String nodeName=sysProcessNodeService.selectNodeName(node);
+        notice.setNodeName(nodeName);
+        sysProcessNoticeService.insertSysProcessNotice(notice);
     }
 
     /**

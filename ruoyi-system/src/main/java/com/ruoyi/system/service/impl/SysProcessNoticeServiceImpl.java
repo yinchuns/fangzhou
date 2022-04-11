@@ -26,7 +26,7 @@ public class SysProcessNoticeServiceImpl implements ISysProcessNoticeService
      * @return 流程记录
      */
     @Override
-    public SysProcessNotice selectSysProcessNoticeByProcessRuntimeId(Long processRuntimeId)
+    public List<SysProcessNotice> selectSysProcessNoticeByProcessRuntimeId(Long processRuntimeId)
     {
         return sysProcessNoticeMapper.selectSysProcessNoticeByProcessRuntimeId(processRuntimeId);
     }

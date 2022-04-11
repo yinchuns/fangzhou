@@ -32,6 +32,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectSysProcessNoticeByProcessRuntimeId" parameterType="Long" resultMap="SysProcessNoticeResult">
         <include refid="selectSysProcessNoticeVo"/>
         where process_runtime_id = #{processRuntimeId}
+        order by approve_time desc
     </select>
         
     <insert id="insertSysProcessNotice" parameterType="SysProcessNotice">

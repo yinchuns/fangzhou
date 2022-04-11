@@ -6,26 +6,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.system.service.ISysDeptService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.domain.SysProcess;
+import com.ruoyi.system.domain.SysProcessNode;
+import com.ruoyi.system.domain.SysProcessRuntime;
+import com.ruoyi.system.service.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.SysProcessNodeApprover;
-import com.ruoyi.system.service.ISysProcessNodeApproverService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 
@@ -41,12 +35,38 @@ public class SysProcessNodeApproverController extends BaseController
 {
     @Autowired
     private ISysProcessNodeApproverService sysProcessNodeApproverService;
-
     @Autowired
     private ISysUserService sysUserService;
-
     @Autowired
     private ISysDeptService sysDeptService;
+    @Autowired
+    private ISysProcessRuntimeService sysProcessRuntimeService;
+    @Autowired
+    private ISysProcessNodeService sysProcessNodeService;
+    @Autowired
+    private ISysProcessService sysProcessService;
+
+    /**
+     * 获取对应节点下的所有审核人
+     * 需要携带参数：
+     * 流程标识：processMark
+     * 当前节点：currentNode
+     * */
+    @GetMapping("/getAproverlist")
+    public TableDataInfo getAproverlist(SysProcessRuntime sysProcessRuntime)
+    {
+        //获取下一个节点信息
+        SysProcessNode node=new SysProcessNode();
+        node.setProcessMark(sysProcessRuntime.getProcessMark());
+        Integer nextNode=sysProcessRuntime.getCurrentNode()+1;
+        node.setStep(nextNode);
+        node=sysProcessNodeService.selectNodeByProcessMarkAndStep(node);
+
+        //根据nodeId获取对应审核人
+        SysProcessNodeApprover a=new SysProcessNodeApprover();
+        a.setNodeId(node.getId());
+        return getDataTable(sysProcessNodeApproverService.selectSysProcessNodeApproverList(a));
+    }
 
     /**
      * 通过部门和用户名获取用户信息
@@ -54,11 +74,7 @@ public class SysProcessNodeApproverController extends BaseController
     @GetMapping("/getUserlist")
     public TableDataInfo list(SysUser u)
     {
-        /*if((u.getUserName()==null || ("").equals(u.getUserName())) && ( u.getDeptId()==null || ("").equals(u.getDeptId()))){
-            u.setUserName("0");
-        }*/
         startPage();
-
         List<SysUser> uList=sysUserService.selectUserList(u);
         if(uList.size()>0){
             for(SysUser u1:uList){
@@ -163,14 +179,28 @@ public class SysProcessNodeApproverController extends BaseController
         return toAjax(sysProcessNodeApproverService.updateSysProcessNodeApprover(sysProcessNodeApprover));
     }
 
+
     /**
      * 删除节点审核人
      */
     @PreAuthorize("@ss.hasPermi('system:approver:remove')")
     @Log(title = "节点审核人", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
+    @DeleteMapping("/{ids}/{nodeId}")
+    public AjaxResult remove(@PathVariable("ids") Long[] ids,@PathVariable("nodeId") Long nodeId)
     {
+        //获取节点信息
+        SysProcessNode node=sysProcessNodeService.selectSysProcessNodeById(nodeId);
+        //获取流程，判断流程是否已开启
+        SysProcess p=new SysProcess();
+        p.setProcessMark(node.getProcessMark());
+        p=sysProcessService.selectProcessByCondition(p);
+        //判断流程是否已开启
+        if(p.getStatus().equals(1)){//若已开启
+            Integer approverCount=sysProcessNodeApproverService.selectApproverCountByNode(nodeId);
+            if(approverCount-ids.length<1){
+                return AjaxResult.error("当前流程已开启,该节点必须保留一个审核人！");
+            }
+        }
         return toAjax(sysProcessNodeApproverService.deleteSysProcessNodeApproverByIds(ids));
     }
 }

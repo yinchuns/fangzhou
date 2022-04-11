@@ -39,6 +39,9 @@ public class SysProcessNode extends BaseEntity
     /** 删除标识  （0代表存在 2代表删除） */
     private Integer delFlag;
 
+    /** 节点选中状态 0：未选中  1：选中*/
+    private String checkStatus;
+
 
 
     public void setId(Long id) 
@@ -106,6 +109,15 @@ public class SysProcessNode extends BaseEntity
             .append("createTime", getCreateTime())
             .append("delFlag", getDelFlag())
             .append("processName", getProcessName())
+            .append("checkStatus", getCheckStatus())
             .toString();
+    }
+
+    public String getCheckStatus() {
+        return checkStatus;
+    }
+
+    public void setCheckStatus(String checkStatus) {
+        this.checkStatus = checkStatus;
     }
 }

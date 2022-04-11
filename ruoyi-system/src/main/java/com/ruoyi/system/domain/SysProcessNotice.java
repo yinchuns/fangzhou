@@ -23,7 +23,7 @@ public class SysProcessNotice extends BaseEntity
 
     /** 审批人 */
     @Excel(name = "审批人")
-    private Long approverId;
+    private String approver;
 
     /** 审批时间  */
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -51,15 +51,7 @@ public class SysProcessNotice extends BaseEntity
     {
         return processRuntimeId;
     }
-    public void setApproverId(Long approverId) 
-    {
-        this.approverId = approverId;
-    }
 
-    public Long getApproverId() 
-    {
-        return approverId;
-    }
     public void setApproveTime(Date approveTime) 
     {
         this.approveTime = approveTime;
@@ -101,11 +93,19 @@ public class SysProcessNotice extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("processRuntimeId", getProcessRuntimeId())
-            .append("approverId", getApproverId())
+            .append("approver", getApprover())
             .append("approveTime", getApproveTime())
             .append("approveMsg", getApproveMsg())
             .append("approveStatus", getApproveStatus())
             .append("nodeName", getNodeName())
             .toString();
+    }
+
+    public String getApprover() {
+        return approver;
+    }
+
+    public void setApprover(String approver) {
+        this.approver = approver;
     }
 }

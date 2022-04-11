@@ -17,7 +17,7 @@ public interface ISysProcessNoticeService
      * @param processRuntimeId 流程记录主键
      * @return 流程记录
      */
-    public SysProcessNotice selectSysProcessNoticeByProcessRuntimeId(Long processRuntimeId);
+    public List<SysProcessNotice> selectSysProcessNoticeByProcessRuntimeId(Long processRuntimeId);
 
     /**
      * 查询流程记录列表

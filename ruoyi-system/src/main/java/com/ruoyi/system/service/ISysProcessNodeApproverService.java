@@ -12,6 +12,13 @@ import com.ruoyi.system.domain.SysProcessNodeApprover;
 public interface ISysProcessNodeApproverService 
 {
     /**
+     * 根据节点id获取该节点下所有的审核人数量
+     * @param nodeId
+     * @return
+     */
+    public Integer selectApproverCountByNode(Long nodeId);
+
+    /**
      * 查询节点审核人
      * 
      * @param id 节点审核人主键

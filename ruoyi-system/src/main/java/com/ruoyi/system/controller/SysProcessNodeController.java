@@ -126,7 +126,7 @@ public class SysProcessNodeController extends BaseController
             p.setProcessMark(n.getProcessMark());
             p=sysProcessService.selectProcessByCondition(p);
             if(p!=null && p.getStatus().equals(1)){
-                return AjaxResult.error("节点流程已开启，不能删除！");
+                return AjaxResult.error("当前流程已开启，节点不能删除！");
             }
         }
         try {

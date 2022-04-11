@@ -21,6 +21,16 @@ public class SysProcessNodeServiceImpl implements ISysProcessNodeService
     private SysProcessNodeMapper sysProcessNodeMapper;
 
     @Override
+    public SysProcessNode selectNodeByProcessMarkAndStep(SysProcessNode sysProcessNode) {
+        return sysProcessNodeMapper.selectNodeByProcessMarkAndStep(sysProcessNode);
+    }
+
+    @Override
+    public String selectNodeName(SysProcessNode sysProcessNode) {
+        return sysProcessNodeMapper.selectNodeName(sysProcessNode);
+    }
+
+    @Override
     public Integer selectMaxNode(String processMark) {
         return sysProcessNodeMapper.selectMaxNode(processMark);
     }

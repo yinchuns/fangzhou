@@ -37,6 +37,7 @@ public class SysProcessNodeApprover extends BaseEntity
     /** 多个id */
     private List<Long> approverIds;
 
+
     public void setId(Long id) 
     {
         this.id = id;

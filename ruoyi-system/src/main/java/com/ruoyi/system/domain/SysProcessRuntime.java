@@ -63,6 +63,10 @@ public class  SysProcessRuntime extends BaseEntity
     /** 删除标识      （0代表存在 2代表删除） */
     private Integer delFlag;
 
+    /** 最大节点 */
+    @Excel(name = "当前节点")
+    private Integer maxNode;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -173,6 +177,7 @@ public class  SysProcessRuntime extends BaseEntity
             .append("sysProcessNotice", getSysProcessNotice())
             .append("sysProcessNoticeList", getSysProcessNoticeList())
             .append("sysProcessNodeList", getSysProcessNodeList())
+            .append("maxNode", getMaxNode())
             .toString();
     }
 
@@ -198,5 +203,13 @@ public class  SysProcessRuntime extends BaseEntity
 
     public void setSysProcessNodeList(List<SysProcessNode> sysProcessNodeList) {
         this.sysProcessNodeList = sysProcessNodeList;
+    }
+
+    public Integer getMaxNode() {
+        return maxNode;
+    }
+
+    public void setMaxNode(Integer maxNode) {
+        this.maxNode = maxNode;
     }
 }

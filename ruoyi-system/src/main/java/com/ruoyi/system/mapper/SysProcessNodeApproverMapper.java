@@ -9,8 +9,16 @@ import com.ruoyi.system.domain.SysProcessNodeApprover;
  * @author ruoyi
  * @date 2022-04-08
  */
-public interface SysProcessNodeApproverMapper 
+public interface SysProcessNodeApproverMapper
 {
+
+    /**
+     * 根据节点id获取该节点下所有的审核人数量
+     * @param nodeId
+     * @return
+     */
+    public Integer selectApproverCountByNode(Long nodeId);
+
     /**
      * 查询节点审核人
      * 

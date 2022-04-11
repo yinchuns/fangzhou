@@ -15,6 +15,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="processName"    column="process_name"    />
     </resultMap>
 
+    <select id="selectNodeByProcessMarkAndStep"  parameterType="SysProcessNode" resultMap="SysProcessNodeResult">
+        select * from sys_process_node  where process_mark = #{processMark} and  step=#{step}
+    </select>
+
+    <select id="selectNodeName"  parameterType="SysProcessNode" resultType="java.lang.String">
+        select node_name from sys_process_node  where process_mark = #{processMark} and  step=#{step}
+    </select>
+
     <select id="selectMaxNode"  parameterType="java.lang.String" resultType="java.lang.Integer">
         select count(id) from sys_process_node  where process_mark = #{processMark}
     </select>

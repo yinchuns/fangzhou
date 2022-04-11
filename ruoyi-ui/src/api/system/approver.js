@@ -45,9 +45,18 @@ export function updateApprover(data) {
 }
 
 // 删除节点审核人
-export function delApprover(id) {
+/*export function delApprover(data) {
   return request({
-    url: '/system/process/approver/' + id,
-    method: 'delete'
-  })
+    url: '/system/process/approver/remove',
+    method: 'get',
+    params: data
+  })*/
+
+// 删除节点审核人
+  export function delApprover(id,nodeId) {
+    return request({
+      url: '/system/process/approver/' + id + '/' +nodeId,
+      method: 'delete'
+    })
+
 }

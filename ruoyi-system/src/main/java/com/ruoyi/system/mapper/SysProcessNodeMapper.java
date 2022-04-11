@@ -13,6 +13,20 @@ import org.apache.ibatis.annotations.Param;
 public interface SysProcessNodeMapper 
 {
     /**
+     * 根据流程标识和节点序号，获取对应节点详情
+     * @param sysProcessNode
+     * @return nodeName   节点详情
+     */
+    public SysProcessNode selectNodeByProcessMarkAndStep(SysProcessNode sysProcessNode);
+
+    /**
+     * 根据流程标识和节点序号，获取对应节点名称
+     * @param sysProcessNode
+     * @return nodeName   节点名称
+     */
+    String selectNodeName (SysProcessNode sysProcessNode);
+
+    /**
      * 获取对应流程最大节点
      * @param processMark 流程标识
      * @return 节点序号

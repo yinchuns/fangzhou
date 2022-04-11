@@ -453,10 +453,12 @@ export default {
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
+    //删除节点审核人
     handleApproverDelete(row){
       const ids = row.id || this.approverAllIds;
+      const nodeId=this.nodeId;
       this.$modal.confirm('是否确认删除该节点审核人？').then(function() {
-        return delApprover(ids);
+        return delApprover(ids,nodeId);
       }).then(() => {
         this.getApproverList(this.nodeId);
         this.$modal.msgSuccess("删除成功");

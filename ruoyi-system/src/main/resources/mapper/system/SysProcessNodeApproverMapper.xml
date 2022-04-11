@@ -13,6 +13,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="approverName"    column="approver_name"    />
     </resultMap>
 
+    <select id="selectApproverCountByNode"  parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(id) from sys_process_node_approver  where node_id = #{nodeId}
+    </select>
+
     <sql id="selectSysProcessNodeApproverVo">
         select id, node_id, approver_id, remark, del_flag from sys_process_node_approver
     </sql>
