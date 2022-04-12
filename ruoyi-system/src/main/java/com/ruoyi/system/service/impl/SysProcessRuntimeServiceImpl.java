@@ -21,6 +21,17 @@ public class SysProcessRuntimeServiceImpl implements ISysProcessRuntimeService
     private SysProcessRuntimeMapper sysProcessRuntimeMapper;
 
     /**
+     * 根据formId查询流程实例
+     *
+     * @param formId 表单id
+     * @return 流程实例
+     */
+    @Override
+    public SysProcessRuntime selectProcessRuntimeByFormId(Long formId) {
+        return sysProcessRuntimeMapper.selectProcessRuntimeByFormId(formId);
+    }
+
+    /**
      * 查询流程实例
      * 
      * @param id 流程实例主键

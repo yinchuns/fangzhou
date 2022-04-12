@@ -37,6 +37,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="currentNode != null "> and current_node = #{currentNode}</if>
         </where>
     </select>
+
+    <select id="selectProcessRuntimeByFormId" parameterType="Long" resultMap="SysProcessRuntimeResult">
+        select (select count(n.id) from sys_process_node n  where n.process_mark =pr.process_mark)as max_node,pr.id, pr.process_mark, pr.status, pr.previous_node, pr.previous_approver_id, pr.approver_id, pr.form_id, pr.create_by, pr.create_time, pr.process_name, pr.current_node, pr.remark, pr.del_flag from sys_process_runtime pr
+        where form_id = #{formId}
+    </select>
     
     <select id="selectSysProcessRuntimeById" parameterType="Long" resultMap="SysProcessRuntimeResult">
         select (select count(n.id) from sys_process_node n  where n.process_mark =pr.process_mark)as max_node,pr.id, pr.process_mark, pr.status, pr.previous_node, pr.previous_approver_id, pr.approver_id, pr.form_id, pr.create_by, pr.create_time, pr.process_name, pr.current_node, pr.remark, pr.del_flag from sys_process_runtime pr

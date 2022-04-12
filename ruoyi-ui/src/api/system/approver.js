@@ -44,13 +44,6 @@ export function updateApprover(data) {
   })
 }
 
-// 删除节点审核人
-/*export function delApprover(data) {
-  return request({
-    url: '/system/process/approver/remove',
-    method: 'get',
-    params: data
-  })*/
 
 // 删除节点审核人
   export function delApprover(id,nodeId) {

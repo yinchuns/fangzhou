@@ -9,8 +9,16 @@ import com.ruoyi.system.domain.SysProcessRuntime;
  * @author ruoyi
  * @date 2022-04-08
  */
-public interface SysProcessRuntimeMapper 
+public interface SysProcessRuntimeMapper
 {
+    /**
+     * 根据formId查询流程实例
+     *
+     * @param formId 表单id
+     * @return 流程实例
+     */
+    public SysProcessRuntime selectProcessRuntimeByFormId(Long formId);
+
     /**
      * 查询流程实例
      * 

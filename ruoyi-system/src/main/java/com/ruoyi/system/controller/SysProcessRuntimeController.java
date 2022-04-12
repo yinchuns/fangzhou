@@ -76,6 +76,30 @@ public class SysProcessRuntimeController extends BaseController
     }
 
     /**
+     * 根据流程实例Id获取流程实例详细信息
+     * @param  formId
+     */
+    @PreAuthorize("@ss.hasPermi('system:runtime:query')")
+    @GetMapping(value = "/getInfoByFormId/{formId}")
+    public AjaxResult getInfoByFormId(@PathVariable("formId") Long formId)
+    {
+        SysProcessRuntime sysProcessRuntime=sysProcessRuntimeService.selectProcessRuntimeByFormId(formId);
+        //根据流程标志获取对应所有流程节点
+        SysProcessNode node=new SysProcessNode();
+        node.setProcessMark(sysProcessRuntime.getProcessMark());
+        List<SysProcessNode> nodeList= sysProcessNodeService.selectSysProcessNodeList(node);
+
+        //生成流程节点树
+        genProcessNodeTree(sysProcessRuntime, nodeList);
+
+        //根据流程实例id获取流程审核日志
+        List<SysProcessNotice> noticeList=sysProcessNoticeService.selectSysProcessNoticeByProcessRuntimeId(sysProcessRuntime.getId());
+        sysProcessRuntime.setSysProcessNoticeList(noticeList);
+
+        return AjaxResult.success(sysProcessRuntime);
+    }
+
+    /**
      * 获取流程实例详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:runtime:query')")

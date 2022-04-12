@@ -12,6 +12,14 @@ import com.ruoyi.system.domain.SysProcessRuntime;
 public interface ISysProcessRuntimeService 
 {
     /**
+     * 根据formId查询流程实例
+     *
+     * @param formId 表单id
+     * @return 流程实例
+     */
+    public SysProcessRuntime selectProcessRuntimeByFormId(Long formId);
+
+    /**
      * 查询流程实例
      * 
      * @param id 流程实例主键

@@ -17,6 +17,15 @@ export function getRuntime(id) {
   })
 }
 
+
+// 查询流程实例详细
+export function getRuntimeByFormId(formId) {
+  return request({
+    url: '/system/process/processRuntime/getInfoByFormId/' + formId,
+    method: 'get'
+  })
+}
+
 // 新增流程实例
 export function addRuntime(data) {
   return request({
