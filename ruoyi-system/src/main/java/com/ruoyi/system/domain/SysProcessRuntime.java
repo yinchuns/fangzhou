@@ -67,6 +67,9 @@ public class  SysProcessRuntime extends BaseEntity
     @Excel(name = "当前节点")
     private Integer maxNode;
 
+    /** 审核信息 */
+    private String approveMsg;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -178,6 +181,7 @@ public class  SysProcessRuntime extends BaseEntity
             .append("sysProcessNoticeList", getSysProcessNoticeList())
             .append("sysProcessNodeList", getSysProcessNodeList())
             .append("maxNode", getMaxNode())
+            .append("approveMsg", getApproveMsg())
             .toString();
     }
 
@@ -211,5 +215,14 @@ public class  SysProcessRuntime extends BaseEntity
 
     public void setMaxNode(Integer maxNode) {
         this.maxNode = maxNode;
+    }
+
+
+    public String getApproveMsg() {
+        return approveMsg;
+    }
+
+    public void setApproveMsg(String approveMsg) {
+        this.approveMsg = approveMsg;
     }
 }

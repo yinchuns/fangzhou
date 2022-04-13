@@ -76,7 +76,7 @@ public class SysProcessRuntimeController extends BaseController
     }
 
     /**
-     * 根据流程实例Id获取流程实例详细信息
+     * 根据formId获取流程实例详细信息
      * @param  formId
      */
     @PreAuthorize("@ss.hasPermi('system:runtime:query')")
@@ -100,7 +100,8 @@ public class SysProcessRuntimeController extends BaseController
     }
 
     /**
-     * 获取流程实例详细信息
+     * 根据流程实例Id获取流程实例详细信息
+     * 传入参数id
      */
     @PreAuthorize("@ss.hasPermi('system:runtime:query')")
     @GetMapping(value = "/{id}")
@@ -161,6 +162,9 @@ public class SysProcessRuntimeController extends BaseController
 
     /**
      * 新增流程实例
+     * 携带参数:
+     * formId (表单id)
+     * processMark （流程标识）
      */
     @PreAuthorize("@ss.hasPermi('system:runtime:add')")
     @Log(title = "流程实例", businessType = BusinessType.INSERT)
@@ -195,6 +199,9 @@ public class SysProcessRuntimeController extends BaseController
 
     /**
      * 修改流程实例
+     * 携带参数：
+     * id
+     * status,当退回时设置该参数为2，其他时候不用传入值
      */
     @PreAuthorize("@ss.hasPermi('system:runtime:edit')")
     @Log(title = "流程实例", businessType = BusinessType.UPDATE)
@@ -259,8 +266,8 @@ public class SysProcessRuntimeController extends BaseController
         //写入审批时间
         notice.setApproveTime(new Date());
         //写入审批信息
-        if(sysProcessRuntime.getSysProcessNotice()!=null && sysProcessRuntime.getSysProcessNotice().getApproveMsg()!=null){
-            notice.setApproveMsg(sysProcessRuntime.getSysProcessNotice().getApproveMsg());
+        if(sysProcessRuntime.getApproveMsg()!=null){
+            notice.setApproveMsg(sysProcessRuntime.getApproveMsg());
         }
         //写入节点名称
         //根据流程标识和当前节点，获取节点名称

@@ -1,5 +1,15 @@
 import request from '@/utils/request'
 
+
+// 查询用户列表
+export function getAproverlist(query) {
+  return request({
+    url: '/system/process/approver/getAproverlist',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询用户列表
 export function listUser(query) {
   return request({
