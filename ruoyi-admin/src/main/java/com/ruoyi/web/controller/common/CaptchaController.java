@@ -17,7 +17,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.sign.Base64;
 import com.ruoyi.common.utils.uuid.IdUtils;
-import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.module.service.ISysConfigService;
 
 /**
  * 验证码操作处理

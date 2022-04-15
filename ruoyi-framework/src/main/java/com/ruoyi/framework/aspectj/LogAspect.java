@@ -25,7 +25,7 @@ import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
-import com.ruoyi.system.domain.SysOperLog;
+import com.ruoyi.system.module.domain.SysOperLog;
 
 /**
  * 操作日志记录处理

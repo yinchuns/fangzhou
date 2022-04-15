@@ -27,9 +27,9 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.service.ISysPostService;
-import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.module.service.ISysPostService;
+import com.ruoyi.system.module.service.ISysRoleService;
+import com.ruoyi.system.module.service.ISysUserService;
 
 /**
  * 用户信息

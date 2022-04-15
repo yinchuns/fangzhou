@@ -5,8 +5,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.system.service.ISysMenuService;
-import com.ruoyi.system.service.ISysRoleService;
+import com.ruoyi.system.module.service.ISysMenuService;
+import com.ruoyi.system.module.service.ISysRoleService;
 
 /**
  * 用户权限处理

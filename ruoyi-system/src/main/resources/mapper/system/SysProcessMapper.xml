@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.SysProcessMapper">
+<mapper namespace="com.ruoyi.system.module.mapper.SysProcessMapper">
     
     <resultMap type="SysProcess" id="SysProcessResult">
         <result property="id"    column="id"    />
