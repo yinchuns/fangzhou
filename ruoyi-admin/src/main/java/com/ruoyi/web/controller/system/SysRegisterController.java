@@ -9,7 +9,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.model.RegisterBody;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.web.service.SysRegisterService;
-import com.ruoyi.system.module.service.ISysConfigService;
+import com.ruoyi.system.module.process.service.ISysConfigService;
 
 /**
  * 注册验证

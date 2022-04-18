@@ -22,8 +22,8 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.module.service.ISysDictDataService;
-import com.ruoyi.system.module.service.ISysDictTypeService;
+import com.ruoyi.system.module.process.service.ISysDictDataService;
+import com.ruoyi.system.module.process.service.ISysDictTypeService;
 
 /**
  * 数据字典信息

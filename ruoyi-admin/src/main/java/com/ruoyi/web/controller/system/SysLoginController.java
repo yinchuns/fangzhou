@@ -15,7 +15,7 @@ import com.ruoyi.common.core.domain.model.LoginBody;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.SysPermissionService;
-import com.ruoyi.system.module.service.ISysMenuService;
+import com.ruoyi.system.module.process.service.ISysMenuService;
 
 /**
  * 登录验证

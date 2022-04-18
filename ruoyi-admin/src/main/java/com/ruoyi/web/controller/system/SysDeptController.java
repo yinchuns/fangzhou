@@ -21,7 +21,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.module.service.ISysDeptService;
+import com.ruoyi.system.module.process.service.ISysDeptService;
 
 /**
  * 部门信息

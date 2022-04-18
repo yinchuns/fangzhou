@@ -17,8 +17,8 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.module.domain.SysNotice;
-import com.ruoyi.system.module.service.ISysNoticeService;
+import com.ruoyi.system.module.process.domain.SysNotice;
+import com.ruoyi.system.module.process.service.ISysNoticeService;
 
 /**
  * 公告 信息操作处理

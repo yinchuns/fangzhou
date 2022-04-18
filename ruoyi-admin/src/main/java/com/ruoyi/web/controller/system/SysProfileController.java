@@ -22,7 +22,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.framework.web.service.TokenService;
-import com.ruoyi.system.module.service.ISysUserService;
+import com.ruoyi.system.module.process.service.ISysUserService;
 
 /**
  * 个人信息 业务处理

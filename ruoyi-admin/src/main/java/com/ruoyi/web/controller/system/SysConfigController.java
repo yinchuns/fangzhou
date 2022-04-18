@@ -20,8 +20,8 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.module.domain.SysConfig;
-import com.ruoyi.system.module.service.ISysConfigService;
+import com.ruoyi.system.module.process.domain.SysConfig;
+import com.ruoyi.system.module.process.service.ISysConfigService;
 
 /**
  * 参数配置 信息操作处理

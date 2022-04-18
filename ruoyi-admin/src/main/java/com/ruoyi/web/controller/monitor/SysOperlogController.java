@@ -16,8 +16,8 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.module.domain.SysOperLog;
-import com.ruoyi.system.module.service.ISysOperLogService;
+import com.ruoyi.system.module.process.domain.SysOperLog;
+import com.ruoyi.system.module.process.service.ISysOperLogService;
 
 /**
  * 操作日志记录

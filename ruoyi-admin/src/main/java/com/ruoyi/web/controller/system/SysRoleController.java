@@ -26,9 +26,9 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.framework.web.service.TokenService;
-import com.ruoyi.system.module.domain.SysUserRole;
-import com.ruoyi.system.module.service.ISysRoleService;
-import com.ruoyi.system.module.service.ISysUserService;
+import com.ruoyi.system.module.process.domain.SysUserRole;
+import com.ruoyi.system.module.process.service.ISysRoleService;
+import com.ruoyi.system.module.process.service.ISysUserService;
 
 /**
  * 角色信息
