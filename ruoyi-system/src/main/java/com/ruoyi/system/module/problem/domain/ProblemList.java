@@ -30,6 +30,9 @@ public class ProblemList extends BaseEntity
     @Excel(name = "问题编号")
     private String problemNum;
 
+    /** 问题编号 */
+    private Long processRuntimeId;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -79,6 +82,15 @@ public class ProblemList extends BaseEntity
             .append("problemName", getProblemName())
             .append("problemDetail", getProblemDetail())
             .append("problemNum", getProblemNum())
+            .append("processRuntimeId", getProcessRuntimeId())
             .toString();
+    }
+
+    public Long getProcessRuntimeId() {
+        return processRuntimeId;
+    }
+
+    public void setProcessRuntimeId(Long processRuntimeId) {
+        this.processRuntimeId = processRuntimeId;
     }
 }

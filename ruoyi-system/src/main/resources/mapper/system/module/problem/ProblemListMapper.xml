@@ -14,6 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="problemName"    column="problem_name"    />
         <result property="problemDetail"    column="problem_detail"    />
         <result property="problemNum"    column="problem_num"    />
+        <result property="processRuntimeId"    column="processRuntimeId"    />
     </resultMap>
 
     <sql id="selectProblemListVo">
@@ -30,8 +31,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="selectProblemListById" parameterType="Long" resultMap="ProblemListResult">
-        <include refid="selectProblemListVo"/>
-        where id = #{id}
+        SELECT
+            pr.id AS processRuntimeId,
+            pl.id,
+            pl.create_by,
+            pl.create_time,
+            pl.update_by,
+            pl.update_time,
+            pl.remark,
+            pl.problem_name,
+            pl.problem_detail,
+            pl.problem_num
+        FROM
+            problem_list pl
+                LEFT JOIN sys_process_runtime pr ON pl.id = pr.form_id
+        where pl.id = #{id}
     </select>
         
     <insert id="insertProblemList" parameterType="ProblemList" useGeneratedKeys="true" keyProperty="id">

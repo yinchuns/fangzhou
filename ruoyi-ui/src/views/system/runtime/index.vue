@@ -1,3 +1,4 @@
+<div>
 <template>
   <el-form ref="submitForm" size="small" :inline="true" v-show="showSumb" label-width="68px">
     <el-button type="primary"    plain
@@ -17,7 +18,7 @@
     <el-row :gutter="10" >
       <el-col :span="1.5" v-for="(item,index) of nodeList" >
         <view :class="item.checkStatus=1?'flowCheckBox':'flowBox'">{{item.nodeName}}</view>>
-        <view v-if="index > nodeList.length-1" >"————>"</view>>
+         <view v-if="index > nodeList.length-1" >"————>"</view>>
       </el-col>
     </el-row>
 
@@ -49,6 +50,7 @@
                @click="confirmApprover()">选择</el-button>
   </el-dialog>
 </template>
+</div>
 <style>
 .flowCheckBox{
   border-width: 1px;
@@ -80,6 +82,13 @@ import {getAproverlist} from "../../../api/system/approver";
 
 export default {
   name: "Runtime",
+  props:{
+    prunTime:{
+      type:Object,
+      default:''
+    },
+    namedata:''
+  },
   data() {
     return {
       approverLoading: false,
@@ -93,7 +102,11 @@ export default {
       //流程日志列表
       noticeList: [],
       // 流程实例对象
-      processRunTime: {},
+      processRunTime: {
+        id:"",
+        formId:"",
+        processMark:""
+      },
       //审核意见
       approveMsg:"",
       //审核人列表
@@ -106,6 +119,11 @@ export default {
   },
   created() {
     this.getProcessRunTime();
+
+  },
+  mounted() {
+   /* console.log(this.namedata)*/
+    console.log(this.prunTime);
   },
   methods: {
     clickChange (item) {
@@ -119,14 +137,12 @@ export default {
             addRuntime(this.processRunTime).then(response => {
               this.$modal.msgSuccess("成功");
               this.open = false;
-             // this.getProcessRunTime();
             });
           }else if(processRunTime.id!=null){
             //执行流程通过动作
             updateRuntime(this.processRunTime).then(response => {
               this.$modal.msgSuccess("成功");
               this.open = false;
-             // this.getProcessRunTime();
             });
           }
           this.openApprover = false;
@@ -143,8 +159,8 @@ export default {
     },
     /** 查询流程实例列表 */
     getProcessRunTime() {
-      if(this.processRunTime.id!=null){
-        getRuntime(this.processRunTime.id).then(response => {
+      if(this.prunTime.id!=null){
+        getRuntime(this.prunTime.id).then(response => {
           if(response.rows!=null){
             this.processRunTime = response.rows;
             this.nodeList=this.processRunTime.nodeList;
@@ -156,9 +172,9 @@ export default {
             }
           }
         });
-      }else if(this.processRunTime.formId!=null){
+      }else if(this.prunTime.formId!=null){
         this.showSumb=true;
-        getRuntimeByFormId(this.processRunTime.formId).then(response => {
+        getRuntimeByFormId(this.prunTime.formId).then(response => {
           if(response.rows!=null){
             this.processRunTime = response.rows;
             this.nodeList=this.processRunTime.nodeList;

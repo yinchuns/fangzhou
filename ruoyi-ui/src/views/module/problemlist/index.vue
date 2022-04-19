@@ -79,11 +79,9 @@
 
     <el-table v-loading="loading" :data="listList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column label="问题编号" align="center" prop="problemNum" />
       <el-table-column label="问题名称" align="center" prop="problemName" />
       <el-table-column label="问题内容" align="center" prop="problemDetail" />
-      <el-table-column label="问题编号" align="center" prop="problemNum" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -113,36 +111,48 @@
     />
 
     <!-- 添加或修改问题清单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="备注">
-          <editor v-model="form.remark" :min-height="192"/>
+        <el-form-item label="问题编号" prop="problemNum">
+          <el-input v-model="form.problemNum" placeholder="请输入问题编号" />
         </el-form-item>
         <el-form-item label="问题名称" prop="problemName">
           <el-input v-model="form.problemName" placeholder="请输入问题名称" />
         </el-form-item>
         <el-form-item label="问题内容" prop="problemDetail">
-          <el-input v-model="form.problemDetail" placeholder="请输入问题内容" />
-        </el-form-item>
-        <el-form-item label="问题编号" prop="problemNum">
-          <el-input v-model="form.problemNum" placeholder="请输入问题编号" />
+          <editor v-model="form.problemDetail" :min-height="192"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
+      <Runtime :prunTime="processRunTime" ></Runtime>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import Runtime from "@/views/system/runtime";
 import { listList, getList, delList, addList, updateList } from "@/api/module/problemlist";
 
 export default {
   name: "List",
+  props:{
+    prunTime:{
+      type:String,
+      default:''
+    }
+  },
   data() {
     return {
+      namedata:'111',
+      processMark:"12",
+      processRunTime:{
+        processMark:'12',
+        id:'',
+        formId:''
+      },
       // 遮罩层
       loading: true,
       // 选中数组
@@ -176,6 +186,10 @@ export default {
       }
     };
   },
+  components:{
+    Runtime
+  }
+  ,
   created() {
     this.getList();
   },
@@ -236,6 +250,11 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getList(id).then(response => {
+        if(response.data.processRuntimeId!=null){
+          this.processRunTime.id=response.data.processRuntimeId;
+        }else{
+          this.processRunTime.formId=id;
+        }
         this.form = response.data;
         this.open = true;
         this.title = "修改问题清单";
